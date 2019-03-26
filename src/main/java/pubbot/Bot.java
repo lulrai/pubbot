@@ -21,6 +21,8 @@ import net.dv8tion.jda.core.OnlineStatus;
 
 //Class imports
 import net.dv8tion.jda.core.entities.Game;
+import pubbot.fun.RoleCommand;
+import pubbot.fun.SayCommand;
 import pubbot.utils.Constants;
 
 public class Bot {
@@ -50,6 +52,8 @@ public class Bot {
                 .setStatus(OnlineStatus.ONLINE)
                 .addCommands(
                     //Commands go here
+                        new SayCommand(),
+                        new RoleCommand()
                 )
                 .build();
     }

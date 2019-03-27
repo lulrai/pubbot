@@ -50,7 +50,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>org.homeworkhub.Bot</mainClass>
+                            <mainClass>pubbot.Bot</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>

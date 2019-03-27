@@ -48,7 +48,7 @@ public class Bot {
                 .setPrefix(Constants.PREFIX)
                 .setOwnerId(Constants.BOT_OWNER_IDS[0])
                 .setEmojis(Constants.SUCCESS, Constants.WARNING, Constants.ERROR)
-                //.setGame(Game.of(Game.GameType.WATCHING,"Homework Hub", Constants.SERVER_INVITE))
+                .setGame(Game.of(Game.GameType.WATCHING,"What I want, gtfo", null))
                 .setStatus(OnlineStatus.ONLINE)
                 .addCommands(
                     //Commands go here

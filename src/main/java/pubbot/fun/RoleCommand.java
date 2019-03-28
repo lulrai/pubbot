@@ -46,7 +46,7 @@ public class RoleCommand  extends Command {
         try {
             Role role = event.getGuild().getRoles().parallelStream().filter(r -> r.getName().equalsIgnoreCase(event.getArgs().trim())).findFirst().orElse(null);
             if(role == null){
-                int index = event.getGuild().getRoles().parallelStream().filter(r -> r.getName().equalsIgnoreCase("New Bitches")).findFirst().get().getPositionRaw();
+                int index = event.getGuild().getRoles().parallelStream().filter(r -> r.getId().equalsIgnoreCase("559932155543945264")).findFirst().get().getPositionRaw();
                 role = event.getGuild().getController().createRole().setName(event.getArgs().trim()).setColor(c).setHoisted(false).setMentionable(false).complete();
                 event.getGuild().getController().modifyRolePositions().selectPosition(role).moveTo(index+1).queue();
             }

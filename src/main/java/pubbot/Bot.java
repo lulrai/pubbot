@@ -21,6 +21,8 @@ import net.dv8tion.jda.core.OnlineStatus;
 
 //Class imports
 import net.dv8tion.jda.core.entities.Game;
+import pubbot.admin.FormatCommand;
+import pubbot.fun.AskMeCommand;
 import pubbot.fun.RoleCommand;
 import pubbot.fun.SayCommand;
 import pubbot.utils.Constants;
@@ -41,6 +43,7 @@ public class Bot {
                 .setGame(Game.playing("Connecting.."))
                 .build();
         jda.setAutoReconnect(true);
+        AskMeCommand.generateAMA();
     }
 
     private static CommandClient commandClient(EventWaiter waiter) {
@@ -48,12 +51,15 @@ public class Bot {
                 .setPrefix(Constants.PREFIX)
                 .setOwnerId(Constants.BOT_OWNER_IDS[0])
                 .setEmojis(Constants.SUCCESS, Constants.WARNING, Constants.ERROR)
-                .setGame(Game.of(Game.GameType.WATCHING,"What I want, gtfo", null))
+                .setGame(Game.of(Game.GameType.WATCHING,"what I want, gtfo", null))
                 .setStatus(OnlineStatus.ONLINE)
+                .useHelpBuilder(false)
                 .addCommands(
                     //Commands go here
                         new SayCommand(),
-                        new RoleCommand()
+                        new RoleCommand(),
+                        new FormatCommand(waiter),
+                        new AskMeCommand()
                 )
                 .build();
     }

@@ -18,7 +18,7 @@ import java.awt.*;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-public class Message {
+public class Messages {
     public static void reply(MessageReceivedEvent event, String message){
         EmbedBuilder em = new EmbedBuilder();
         em.setColor(Color.CYAN);

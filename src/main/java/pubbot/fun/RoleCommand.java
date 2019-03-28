@@ -2,9 +2,11 @@ package pubbot.fun;
 
 import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
+import net.dv8tion.jda.core.EmbedBuilder;
+import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.exceptions.HierarchyException;
-import pubbot.utils.Message;
+import pubbot.utils.Messages;
 
 import java.awt.*;
 
@@ -17,13 +19,13 @@ public class RoleCommand  extends Command {
 
     protected void execute(CommandEvent event) {
         if(event.getArgs().trim().isEmpty() || event.getArgs().trim().length() != 7){
-            Message.error(event, "Smh, need role color in hex as an argument with #. Eg: #ABCDEF");
+            Messages.error(event, "Smh, need role color in hex as an argument with #. Eg: #ABCDEF");
             return;
         }
         Role checkRole = event.getMember().getRoles().parallelStream().filter(r -> r.getName().startsWith("#")).findFirst().orElse(null);
         if(checkRole != null){
             if(checkRole.getName().equalsIgnoreCase(event.getArgs().trim())){
-                Message.reply(event, "You already have this color.");
+                Messages.reply(event, "You already have this color.");
                 return;
             }
             event.getGuild().getController().removeSingleRoleFromMember(event.getMember(), checkRole).complete();
@@ -31,9 +33,15 @@ public class RoleCommand  extends Command {
                 checkRole.delete().queue();
             }
         }
-        Color c = event.getArgs().trim().replace("#", "").length() < 6 ? null : hex2Rgb(event.getArgs().trim());
+        Color c;
+        try {
+            c = event.getArgs().trim().replace("#", "").length() < 6 ? null : hex2Rgb(event.getArgs().trim());
+        }catch (NumberFormatException ex){
+            Messages.error(event, "Not a hex value, color reset to default. Use hex value.");
+            return;
+        }
         if(c == null){
-            Message.error(event, "Invalid color, use hex with #.");
+            Messages.error(event, "Invalid color, use hex with #.");
         }
         try {
             Role role = event.getGuild().getRoles().parallelStream().filter(r -> r.getName().equalsIgnoreCase(event.getArgs().trim())).findFirst().orElse(null);
@@ -42,13 +50,17 @@ public class RoleCommand  extends Command {
                 role = event.getGuild().getController().createRole().setName(event.getArgs().trim()).setColor(c).setHoisted(false).setMentionable(false).complete();
                 event.getGuild().getController().modifyRolePositions().selectPosition(role).moveTo(index+1).queue();
             }
+            EmbedBuilder em = new EmbedBuilder();
+            em.setColor(c);
+            role.getManager().setPermissions(Permission.EMPTY_PERMISSIONS).queue();
             event.getGuild().getController().addSingleRoleToMember(event.getMember(), role).queue(s -> {
-                Message.reply(event, "Color changed successfully to " + event.getArgs().trim() + ".");
+                em.setDescription("Color changed successfully to " + event.getArgs().trim() + ".");
+                event.getTextChannel().sendMessage(em.build()).queue();
             }, f -> {
-                Message.error(event, "Color change failed.");
+                Messages.error(event, "Color change failed.");
             });
         } catch (HierarchyException h){
-            Message.error(event, h.getMessage());
+            Messages.error(event, h.getMessage());
         }
     }
 

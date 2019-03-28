@@ -12,7 +12,7 @@ import com.jagrosh.jdautilities.command.CommandEvent;
 import net.dv8tion.jda.core.exceptions.PermissionException;
 
 //Utils
-import pubbot.utils.Message;
+import pubbot.utils.Messages;
 import pubbot.utils.Permissions;
 
 public class SayCommand extends Command {
@@ -28,12 +28,12 @@ public class SayCommand extends Command {
                 try{
                     event.getMessage().delete().queue();
                 }catch (PermissionException e){
-                    Message.error(event,"Missing permissions: "+e.getPermission());
+                    Messages.error(event,"Missing permissions: "+e.getPermission());
                 }
-                Message.send(event, event.getArgs());
+                Messages.send(event, event.getArgs());
             }
             else{
-                Message.error(event,"You don't have permission to perform this command.");
+                Messages.error(event,"You don't have permission to perform this command.");
             }
         }
     }

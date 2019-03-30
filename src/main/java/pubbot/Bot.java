@@ -23,6 +23,7 @@ import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.entities.Game;
 import pubbot.admin.FormatCommand;
 import pubbot.fun.AskMeCommand;
+import pubbot.fun.DrinkCommand;
 import pubbot.fun.RoleCommand;
 import pubbot.fun.SayCommand;
 import pubbot.utils.Constants;
@@ -59,7 +60,8 @@ public class Bot {
                         new SayCommand(),
                         new RoleCommand(),
                         new FormatCommand(waiter),
-                        new AskMeCommand()
+                        new AskMeCommand(),
+                        new DrinkCommand(waiter)
                 )
                 .build();
     }

@@ -9,6 +9,8 @@ import net.dv8tion.jda.core.exceptions.HierarchyException;
 import pubbot.utils.Messages;
 
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 public class RoleCommand  extends Command {
     public RoleCommand() {
@@ -22,15 +24,13 @@ public class RoleCommand  extends Command {
             Messages.error(event, "Smh, need role color in hex as an argument with #. Eg: #ABCDEF");
             return;
         }
-        Role checkRole = event.getMember().getRoles().parallelStream().filter(r -> r.getName().startsWith("#")).findFirst().orElse(null);
-        if(checkRole != null){
-            if(checkRole.getName().equalsIgnoreCase(event.getArgs().trim())){
-                Messages.reply(event, "You already have this color.");
-                return;
-            }
-            event.getGuild().getController().removeSingleRoleFromMember(event.getMember(), checkRole).complete();
-            if(event.getGuild().getMembersWithRoles(checkRole).size() <= 1){
-                checkRole.delete().queue();
+        ArrayList<Role> allRoles = (ArrayList<Role>) event.getMember().getRoles().parallelStream().filter(r -> r.getName().startsWith("#")).collect(Collectors.toList());
+        for(Role checkRole : allRoles) {
+            if (checkRole != null) {
+                event.getGuild().getController().removeSingleRoleFromMember(event.getMember(), checkRole).complete();
+                if (event.getGuild().getMembersWithRoles(checkRole).size() <= 1) {
+                    checkRole.delete().queue();
+                }
             }
         }
         Color c;

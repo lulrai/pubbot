@@ -24,8 +24,9 @@ public class DrinkCommand extends Command {
         this.name = "drink";
         this.aliases = new String[]{"recipe"};
         this.category = new Category("Fun");
-        this.ownerCommand = true;
         this.waiter = waiter;
+        this.cooldown = 5;
+        this.cooldownScope = CooldownScope.USER;
     }
 
     protected void execute(CommandEvent event) {
@@ -35,7 +36,7 @@ public class DrinkCommand extends Command {
         }
         String drink = event.getArgs().trim();
         try {
-            URL url = new URL("https://www.thecocktaildb.com/api/json/v1/1/search.php?s="+ URLEncoder.encode(drink, "UTF-8"));
+            URL url = new URL("https://www.thecocktaildb.com/api/json/v2/8673533/search.php?s="+ URLEncoder.encode(drink, "UTF-8"));
 
             HttpURLConnection urlConn = (HttpURLConnection) url.openConnection();
             urlConn.setRequestMethod("GET");
@@ -66,7 +67,7 @@ public class DrinkCommand extends Command {
                         Message m = event.getTextChannel().sendMessage(em.build()).complete();
                         waitForChoice(event, drinks, m);
                     }
-                    else if(drink.length() == 1){
+                    else if(drinks.length() == 1){
                         makeDrink(event, drinks, 0);
                     }
                     else{
@@ -102,11 +103,11 @@ public class DrinkCommand extends Command {
                         try{
                             choiceNum = Integer.parseInt(choice);
                         }catch (NumberFormatException ex){
-                            Messages.error(event, "Wtf, pick a number or `cancel`, not anything else.");
-                            waitForChoice(event, drinks, null);
+                            Messages.error(event, "Wtf, pick a number not anything else, drink cancelled.");
+                            return;
                         }
-                        JSONObject drink = drinks.getJSONObject(choiceNum);
-                        makeDrink(event, drinks, choiceNum);
+                        if(choiceNum < 1 || choiceNum >  drinks.length()) {Messages.reply(event, "God damn it, can't you see that's not in the range."); return;}
+                        makeDrink(event, drinks, choiceNum-1);
                     }
                 },
                 2, TimeUnit.MINUTES, () -> Messages.errorTimed(event, "Smh slowpoke, "+event.getAuthor().getAsMention()+". I'm not serving you a drink, you took too long.", 10, TimeUnit.SECONDS));
@@ -143,7 +144,7 @@ public class DrinkCommand extends Command {
         // Measures
         StringBuilder measures = new StringBuilder();
         for(int i = 1; i <= 15; i++){
-            String givenMeasure = drink.getString("strMeasure"+i);
+            String givenMeasure = drink.isNull("strMeasure"+i) ? "" : drink.getString("strMeasure"+i);
             if(!givenMeasure.trim().isEmpty())  measures.append(i).append(". ").append(givenMeasure).append("\n");
         }
         if(!measures.toString().isEmpty()) em.addField("Measures", measures.toString(), true);
@@ -151,7 +152,7 @@ public class DrinkCommand extends Command {
         // Ingredients
         StringBuilder ingredients = new StringBuilder();
         for(int i = 1; i <= 15; i++){
-            String givenIngredient = drink.getString("strIngredient"+i);
+            String givenIngredient =  drink.isNull("strIngredient"+i) ? "" : drink.getString("strIngredient"+i);
             if(!givenIngredient.trim().isEmpty())  ingredients.append(i).append(". ").append(givenIngredient).append("\n");
         }
         if(!ingredients.toString().isEmpty()) em.addField("Ingredients", ingredients.toString(), true);
